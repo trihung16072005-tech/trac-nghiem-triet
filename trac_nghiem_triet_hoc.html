@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trắc nghiệm Triết học</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;padding:20px;color:#222}
+.container{max-width:850px;margin:auto}
+.card{background:white;padding:22px;margin:16px 0;border-radius:14px;box-shadow:0 2px 8px #0001}
+h1{text-align:center}.q{font-weight:bold;margin-bottom:14px}
+label{display:block;padding:10px;border:1px solid #ddd;border-radius:9px;margin:8px 0;cursor:pointer}
+label:hover{background:#f1f5f9}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:#222;color:white;font-size:17px;cursor:pointer}
+#result{display:none;background:white;padding:22px;border-radius:14px;margin:20px 0;font-size:18px}
+.correct{background:#d9f7df!important}.wrong{background:#ffdede!important}
+.small{color:#666;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📝 TRẮC NGHIỆM TRIẾT HỌC</h1>
+<p class="small">Bộ câu hỏi trích từ tài liệu Studocu • 34 câu hiện có trong phần đọc được</p>
+<div id="quiz"></div>
+<button onclick="submitQuiz()">NỘP BÀI & CHẤM ĐIỂM</button>
+<div id="result"></div>
+</div>
+<script>
+const questions = [
+["Nguồn gốc ra đời của triết học là:",["Nguồn gốc nhận thức","Nguồn gốc xã hội","Nguồn gốc tư tưởng","Cả A và B đúng"],3],
+["Triết học ra đời vào khoảng thời gian nào?",["Từ thế kỷ VIII đến thế kỷ VI trước công nguyên","Từ thế kỷ VII đến thế kỷ VI trước công nguyên","Từ thế kỷ VI đến thế kỷ VI trước công nguyên","Từ thế kỷ V đến thế kỷ VI trước công nguyên"],0],
+["Khoa học nào là hạt nhân lý luận của thế giới quan?",["Khoa học xã hội","Thần học","Khoa học tự nhiên","Triết học"],3],
+["Triết học Mác ra đời trong khoảng thời gian nào?",["Những năm 40 thế kỷ XVII","Những năm 40 thế kỷ XVIII","Những năm 40 thế kỷ XIX","Những năm 40 thế kỷ XX"],2],
+["Tiền đề lý luận nào là điều kiện ra đời của triết học Mác?",["Triết học cổ điển Đức","Kinh tế chính trị cổ điển Anh","Chủ nghĩa xã hội không tưởng","Cả A, B và C đúng"],3],
+["Vấn đề cơ bản của triết học là gì?",["Vật chất và ý thức","Vai trò của tự nhiên đối với con người","Mối quan hệ giữa vật chất và ý thức","Khả năng nhận thức của con người"],2],
+["Người đưa ra định nghĩa khoa học về phạm trù vật chất là ai?",["Mác","Ăngghen","Lênin","Hêghen"],2],
+["Trước khi triết học ra đời, thế giới quan nào chi phối nhận thức hoạt động của con người?",["Thần thoại","Tôn giáo","Huyền thoại","Cả A, B và C đều đúng"],3],
+["Quan điểm “vật chất có trước, ý thức có sau” là quan điểm của trường phái nào?",["Duy vật","Duy tâm","Bất khả tri","Cả A, B và C đều đúng"],0],
+["Quan điểm ý thức có trước, vật chất có sau là quan điểm của trường phái nào?",["Duy vật","Duy tâm","Bất khả tri","Cả A, B và C đều sai"],1],
+["Chủ nghĩa duy vật có mấy hình thức cơ bản?",["2","4","3","5"],2],
+["Chủ nghĩa duy tâm có mấy hình thức cơ bản?",["2","4","6","8"],0],
+["Đặc điểm nào sau đây là đúng về chủ nghĩa duy tâm?",["Tinh thần có trước, vật chất có sau, thừa nhận sự sáng tạo của thế giới của lực lượng siêu nhiên","Là thế giới quan của giai cấp thống trị và các lực lượng xã hội phản động","Liên hệ mật thiết với thế giới quan tôn giáo","Tất cả các đáp án trên"],3],
+["Đâu là điều kiện ra đời của triết học Mác?",["Kinh tế xã hội","Lý luận khoa học","Nhân tố chủ quan của Mác và Ăngghen","Cả A, B và C đều đúng"],3],
+["Vấn đề cơ bản của triết học có mấy mặt cần được giải đáp?",["3","2","5","4"],1],
+["Quan điểm của chủ nghĩa duy vật biện chứng về mặt thứ hai trong vấn đề cơ bản của triết học là gì?",["Con người không thể nhận thức được thế giới","Con người có thể nhận thức được thế giới","Hoài nghi về khả năng nhận thức thế giới","Chỉ nhận thức được hiện tượng, không thể nhận thức bản chất"],1],
+["Trong lịch sử, chủ nghĩa duy tâm có những hình thức cơ bản nào?",["Duy tâm chủ quan và duy tâm khách quan","Chủ nghĩa hoài nghi và thuyết bất khả tri","Chủ nghĩa duy linh và thần học","Chủ nghĩa thực chứng và duy lý"],0],
+["Tư duy siêu hình phát triển mạnh mẽ ở giai đoạn nào?",["Thời nguyên thủy","Thời cổ đại","Thời cận đại","Thời hiện đại"],2],
+["Hình thức nào dưới đây được xem là đỉnh cao của phép biện chứng?",["Vận động cơ học, sinh học, vật lý, xã hội, hóa học","Vận động sinh học, hóa học, cơ học, vật lý, xã hội","Vận động cơ học, vật lý, hóa học, sinh học, xã hội","Vận động hóa học, vật lý, cơ học, sinh học, xã hội"],2],
+["“Mọi sự thay đổi và mọi quá trình diễn ra trong vũ trụ, kể từ sự thay đổi vị trí đơn giản cho đến tư duy” được khái quát bằng khái niệm nào?",["Phát triển","Vận động","Tiến bộ","Biến đổi"],1],
+["Đêmôcrit quan niệm vật chất là gì?",["Nước","Không khí","Lửa","Nguyên tử"],3],
+["Quan niệm nào đúng nhất về vật chất của triết học Mác – Lênin?",["Đồng nhất vật chất nói chung với một dạng cụ thể","Không đồng nhất vật chất nói chung với một dạng cụ thể","Coi vật chất nói chung tồn tại tách rời các dạng cụ thể","Đồng nhất vật chất với vật thể"],1],
+["Điền cụm từ thích hợp: Vật chất là ... dùng để chỉ ... được đem lại cho con người trong cảm giác...",["Vật thể / hoạt động","Phạm trù triết học / thực tại khách quan","Phạm trù triết học / một vật thể","Phạm trù / khách quan"],1],
+["Yếu tố đầu tiên đảm bảo cho sự tồn tại của con người là gì?",["Lao động","Sáng tạo nghệ thuật","Làm khoa học","Làm chính trị"],0],
+["Câu ca dao “Thương nhau củ ấu cũng tròn. Ghét nhau quả bồ hòn cũng méo” là biểu hiện của tư tưởng gì?",["Duy vật siêu hình","Duy tâm chủ quan","Duy vật chất phác","Duy tâm khách quan"],1],
+["Quan điểm nào chỉ mối quan hệ giữa vật chất và ý thức?",["Ý thức do vật chất quyết định","Ý thức do vật chất quyết định, có tính độc lập tương đối và tác động đến vật chất thông qua thực tiễn","Ý thức tác động đến vật chất","Ý thức và vật chất tồn tại độc lập"],1],
+["Quy luật phủ định của phủ định chỉ ra nội dung nào?",["Khuynh hướng của sự phát triển","Nguồn gốc, động lực của sự phát triển","Cách thức của sự vận động, phát triển","Mục đích của sự phát triển"],0],
+["Theo chủ nghĩa duy vật biện chứng, luận điểm nào sai?",["Phủ định biện chứng xóa bỏ cái cũ hoàn toàn","Phủ định biện chứng không đơn giản là xóa bỏ cái cũ","Phủ định biện chứng loại bỏ yếu tố không thích hợp của cái cũ","Phủ định của phủ định lặp lại cái ban đầu trên cơ sở mới cao hơn"],0],
+["Khoảng giới hạn từ 0°C đến 100°C của nước ở trạng thái lỏng được gọi là gì?",["Độ","Lượng","Chất","Bước nhảy"],0],
+["Luận điểm nào không đúng về mối quan hệ giữa lượng và chất?",["Trong giới hạn của độ, lượng thay đổi chưa làm chất biến đổi","Trong giới hạn của độ, mọi thay đổi lượng đều làm chất biến đổi","Chỉ khi lượng đạt giới hạn của độ mới làm chất thay đổi","Cả A, B và C đều sai"],1],
+["“Một cây làm chẳng nên non, Ba cây chụm lại nên hòn núi cao” thể hiện nội dung nào?",["Quy luật mâu thuẫn","Quy luật lượng – chất","Quy luật phủ định của phủ định","Quy luật xã hội"],1],
+["Vị trí của quy luật phủ định của phủ định trong phép biện chứng duy vật?",["Chỉ ra nguồn gốc của phát triển","Chỉ ra cách thức của phát triển","Chỉ ra khuynh hướng của phát triển","Chỉ ra động lực của phát triển"],2],
+["Tiêu chuẩn của chân lý theo triết học Mác – Lênin là gì?",["Thực tiễn","Khoa học","Nhận thức","Hiện thực khách quan"],0],
+["Giai đoạn nhận thức diễn ra trên cơ sở tác động trực tiếp của sự vật lên giác quan là?",["Nhận thức lý tính","Nhận thức khoa học","Nhận thức lý luận","Nhận thức cảm tính"],3]
+];
+const quiz=document.getElementById("quiz");
+questions.forEach((q,i)=>{
+ let d=document.createElement("div"); d.className="card";
+ d.innerHTML=`<div class="q">Câu ${i+1}: ${q[0]}</div>`+
+ q[1].map((o,j)=>`<label id="q${i}o${j}"><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65+j)}. ${o}</label>`).join("");
+ quiz.appendChild(d);
+});
+function submitQuiz(){
+ let score=0;
+ questions.forEach((q,i)=>{
+  const selected=document.querySelector(`input[name="q${i}"]:checked`);
+  for(let j=0;j<4;j++){document.getElementById(`q${i}o${j}`).classList.remove("correct","wrong");}
+  if(selected){
+   if(+selected.value===q[2]) score++;
+   else document.getElementById(`q${i}o${selected.value}`).classList.add("wrong");
+  }
+  document.getElementById(`q${i}o${q[2]}`).classList.add("correct");
+ });
+ const percent=Math.round(score/questions.length*100);
+ document.getElementById("result").style.display="block";
+ document.getElementById("result").innerHTML=`<b>Kết quả: ${score}/${questions.length} câu đúng</b><br>Điểm: ${(score/questions.length*10).toFixed(2)}/10<br>Tỷ lệ: ${percent}%`;
+ window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+</script>
+</body></html>
